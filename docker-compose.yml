@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    ports: 
+      - "4000:3000"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/mongomart
+
+  mongo:
+    # build: ./data
+    image: mongo
+    ports:
+      - "27017:27017"
+
+  mongo-seed:
+    image: mongo
+    depends_on:
+      - mongo
+    volumes:
+      - ./data:/mydata
+    command: bash -c "mongoimport --host mongo --drop --db mongomart --collection item --type json --file /mydata/items.json && mongoimport --host mongo --drop --db mongomart --collection cart --type json --file /mydata/cart.json"
+    
